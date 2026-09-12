@@ -10,17 +10,13 @@ No review request is made during recognition recovery or page closure.
 Direct dependencies: `openai==3.13.0` and `pydantic==2.13.5`.
 Their supporting dependencies are installed by pip. No web framework is used.
 
-The environment was created outside OneDrive. Windows app redirection placed it at:
-
-```text
-C:\Users\Florence\AppData\Local\Packages\OpenAI.Codex_2p2nqsd0c76g0\LocalCache\Local\SpeakCue\.venv
-```
-
-Inside Codex, the logical path is `%LOCALAPPDATA%\SpeakCue\.venv`.
-In a normal PowerShell window, use the actual path above for this installation.
-To create a separate environment in normal PowerShell later:
+Create a local Python environment outside the project and any cloud-synced folder.
+The commands below use `%LOCALAPPDATA%\SpeakCue\.venv`, which resolves for the
+current Windows user. Replace `C:\path\to\SpeakCue` with your project folder
+in all examples in this document. Run these commands in PowerShell:
 
 ```powershell
+Set-Location 'C:\path\to\SpeakCue'
 python -m venv "$env:LOCALAPPDATA\SpeakCue\.venv"
 & "$env:LOCALAPPDATA\SpeakCue\.venv\Scripts\python.exe" -m pip install -r requirements.txt
 ```
@@ -31,8 +27,8 @@ Run these commands in PowerShell. Enter the key only at the masked prompt;
 do not paste the key into a command, project file, transcript or chat.
 
 ```powershell
-Set-Location 'C:\Users\Florence\OneDrive - Murdoch University\000_SpeakCue'
-$speakCuePython = 'C:\Users\Florence\AppData\Local\Packages\OpenAI.Codex_2p2nqsd0c76g0\LocalCache\Local\SpeakCue\.venv\Scripts\python.exe'
+Set-Location 'C:\path\to\SpeakCue'
+$speakCuePython = "$env:LOCALAPPDATA\SpeakCue\.venv\Scripts\python.exe"
 $speakCueSecret = Read-Host 'OpenAI API key' -AsSecureString
 $env:OPENAI_API_KEY = [System.Net.NetworkCredential]::new('', $speakCueSecret).Password
 Remove-Variable speakCueSecret
@@ -103,8 +99,8 @@ a key in a different terminal does not update an already running server.
 In a normal PowerShell window, stop any old SpeakCue server and run:
 
 ```powershell
-Set-Location 'C:\Users\Florence\OneDrive - Murdoch University\000_SpeakCue'
-$speakCuePython = 'C:\Users\Florence\AppData\Local\Packages\OpenAI.Codex_2p2nqsd0c76g0\LocalCache\Local\SpeakCue\.venv\Scripts\python.exe'
+Set-Location 'C:\path\to\SpeakCue'
+$speakCuePython = "$env:LOCALAPPDATA\SpeakCue\.venv\Scripts\python.exe"
 $speakCueSecret = Read-Host 'OpenAI API key' -AsSecureString
 $env:OPENAI_API_KEY = [System.Net.NetworkCredential]::new('', $speakCueSecret).Password
 Remove-Variable speakCueSecret

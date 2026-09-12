@@ -6,13 +6,15 @@ is unchanged. PAUSE and SLOW_DOWN remain visual only; QUIET never speaks.
 Spoken cues default to Off on every page load. No voice bundle, credential
 request or voice connection is needed while Off.
 
-## Start on this laptop
+## Start on Windows
 
 The generated browser bundle is included, so normal startup needs no npm step.
-In PowerShell, enter these commands separately:
+Create the Python environment as described in [Stage 8](STAGE8.md).
+Replace `C:\path\to\SpeakCue` with your project folder. In PowerShell, enter
+these commands separately:
 
 ```powershell
-Set-Location 'C:\Users\fmwag\OneDrive - Murdoch University\000_SpeakCue'
+Set-Location 'C:\path\to\SpeakCue'
 $speakCuePython = "$env:LOCALAPPDATA\SpeakCue\.venv\Scripts\python.exe"
 # Only if OPENAI_API_KEY is not already set in this terminal:
 $speakCueSecret = Read-Host 'OpenAI API key' -AsSecureString
@@ -117,8 +119,8 @@ node --test tests/*.test.mjs
 & "$env:LOCALAPPDATA\SpeakCue\.venv\Scripts\python.exe" -B -m unittest discover -s tests -p 'test_*.py' -q
 ```
 
-This Codex environment had Node but no npm command. Installation used a
-temporary npm 12.0.2 CLI under `%TEMP%\SpeakCue-npm-12.0.2`, with Node's
+During development, Node was available without an npm command. Installation
+used a temporary npm 12.0.2 CLI with Node's
 `--use-system-ca` to use Windows trusted certificates; TLS verification remained
 enabled. That temporary CLI is not required to run SpeakCue. npm's audit
 reported zero vulnerabilities at installation. npm blocked esbuild's postinstall
@@ -158,8 +160,8 @@ made no voice request and loaded no SDK bundle; one approved LOOK_UP reached
 Web Audio playback; Off preserved the text cue; Stop retained the profile;
 there were zero microphone-capture calls, zero input-audio messages, zero
 external requests and zero page errors. A 390-pixel window had no horizontal
-overflow. Desktop and narrow screenshots were inspected. The temporary harness
-is `%TEMP%\speakcue-voice-browser-check.mjs`; its test server used only fake
+overflow. Desktop and narrow screenshots were inspected. The test harness's
+local server used only fake
 credentials. These checks do not establish live account access or real latency.
 
 ## Files and rollback
@@ -173,8 +175,7 @@ package-lock.json, .gitignore, tests/spoken-cues.test.mjs,
 tests/realtime-client.test.mjs, tests/test_voice_credentials.py, this document.
 node_modules contains generated installed dependencies and is ignored.
 
-A full pre-change backup was saved at:
-`C:\Users\fmwag\AppData\Local\Temp\SpeakCue-before-look-up-voice-ea1264a92d00473198fd2f6385c7faef`.
+A full pre-change backup was saved locally during development.
 Selecting Off is the normal way to retain the text-only MVP; no rollback or npm
 step is needed. Reload also returns to Off. A missing voice bundle or voice key
 does not prevent text coaching. HANDOFF.md was deliberately not updated.

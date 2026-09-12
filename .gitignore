@@ -2,3 +2,9 @@ node_modules/
 __pycache__/
 *.pyc
 .env
+.env.*
+*.key
+*.pem
+venv/
+.venv/
+*.log
