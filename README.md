@@ -189,6 +189,15 @@ The current hackathon MVP focuses on the laptop version. Future work includes:
 - Audience Pulse.
 - Raspberry Pi version.
 
+## Hackathon
+
+Built for the Agents Everywhere Hackathon Singapore.
+
+@OpenAI\
+@AITinkerers
+
+\#AgentsEverywhere
+
 ## Built by
 
 Built by f-social-code for the Agents Everywhere Hackathon, Singapore.
