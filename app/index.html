@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SpeakCue — Presentation coach</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" type="module"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>SpeakCue</h1>
+        <p class="subtitle">Presentation coach</p>
+      </header>
+
+      <div id="setup-guidance">
+        <p>Use Google Chrome with your laptop’s microphone and camera. Allow access after Start. Choose a quiet room with even lighting.</p>
+        <p class="note">After Stop, your transcript and measurements go to OpenAI for coaching. SpeakCue does not save sessions.</p>
+        <details class="privacy-note">
+          <summary>Privacy and browser guidance</summary>
+          <p>Camera and pause analysis stay on this laptop. No images, video or raw audio are sent to OpenAI. Camera facing estimates head direction, not eye contact or attention.</p>
+          <p>Your browser may send audio to its speech recognition service and need internet access. Chrome has been more stable in live testing; Edge remains supported.</p>
+        </details>
+      </div>
+
+      <button id="listen-button" class="primary" type="button" disabled>START LISTENING</button>
+      <div class="voice-controls">
+        <label for="spoken-cues">Spoken cues:</label>
+        <select id="spoken-cues" aria-describedby="voice-disclosure voice-privacy">
+          <option value="off" selected>Off</option>
+          <option value="on">On</option>
+        </select>
+        <p id="voice-disclosure" class="note">Spoken cues use an AI-generated voice. LOOK UP only for this trial.</p>
+        <p id="voice-privacy" class="note">Only approved cue phrases are sent to the voice service, never your microphone audio. Try earphones to keep cues out of your transcript.</p>
+        <p id="voice-status" class="note" role="status" aria-live="polite">Spoken cues off.</p>
+        <p id="voice-delay" class="note">No spoken cue measured this session.</p>
+      </div>
+      <div class="status-panel" role="status" aria-live="polite" aria-atomic="true">
+        <p id="status-label">Idle</p>
+        <p id="status-message">Select Start listening to begin.</p>
+      </div>
+
+      <section id="coach-panel" class="coach-panel" aria-labelledby="coach-heading">
+        <h2 id="coach-heading">Live coach</h2>
+        <p id="coach-cue" role="status" aria-live="polite" aria-atomic="true" data-active="false">Coach standing by</p>
+        <p id="audio-status" class="note" role="status">Pause monitoring starts when you select Start listening.</p>
+        <p id="camera-status" class="note" role="status">Camera unavailable</p>
+        <details id="camera-preview" hidden>
+          <summary>Local camera preview</summary>
+          <video id="camera-video" muted playsinline aria-label="Local camera preview"></video>
+          <p class="note">Use even lighting and keep your face in view. If the camera is unavailable, check Chrome and Windows camera permissions, then stop and start again.</p>
+        </details>
+      </section>
+
+      <details id="vision-diagnostics" hidden>
+        <summary>Vision diagnostics</summary>
+        <p id="vision-current">Current vision state: unavailable</p>
+        <p class="note">Session observation counts for testing. Stale also counts a transition when frames stop arriving.</p>
+        <dl>
+          <dt>Facing</dt><dd id="vision-face_visible_and_facing">0</dd>
+          <dt>Not facing</dt><dd id="vision-face_visible_not_facing">0</dd>
+          <dt>No face</dt><dd id="vision-no_face">0</dd>
+          <dt>Unavailable</dt><dd id="vision-unavailable">0</dd>
+          <dt>Stale</dt><dd id="vision-stale">0</dd>
+        </dl>
+      </details>
+
+      <section id="live-pace" class="pace-panel" aria-labelledby="pace-heading" hidden>
+        <h2 id="pace-heading">Estimated pace</h2>
+        <p id="pace-value">Waiting for speech...</p>
+        <p class="note">Based on recognised words over the last 20 seconds, including pauses. Allow 20 seconds to measure. Text may arrive late or be revised.</p>
+      </section>
+
+      <section id="session-summary" class="pace-panel" aria-labelledby="summary-heading" hidden>
+        <h2 id="summary-heading" tabindex="-1">Your Speaker Profile</h2>
+        <p class="note">Measured delivery results. Estimates, not a score.</p>
+        <section aria-labelledby="strengths-heading">
+          <h3 id="strengths-heading">What worked</h3>
+          <ul id="review-strengths"></ul>
+          <p id="strengths-note"></p>
+        </section>
+        <section class="review-takeaway" aria-labelledby="improvement-heading">
+          <h3 id="improvement-heading">What to improve</h3>
+          <ul id="review-improvements"></ul>
+          <p id="review-improvement"></p>
+        </section>
+        <h3>Key measured results</h3>
+        <dl class="key-results">
+          <dt>Session duration</dt><dd id="session-duration"></dd>
+          <dt>Estimated average pace</dt><dd><span id="average-pace"></span> — <span id="pace-interpretation"></span></dd>
+          <dt>Total recognised words</dt><dd id="total-words"></dd>
+        </dl>
+        <p id="summary-note" class="note"></p>
+        <section aria-labelledby="pause-review-heading">
+          <h3 id="pause-review-heading">Pauses</h3>
+          <p id="pause-feedback"></p>
+          <dl><dt>Meaningful pauses</dt><dd id="pause-count"></dd>
+          <dt>Longest speaking stretch without a meaningful pause</dt><dd id="pause-longest"></dd></dl>
+        </section>
+        <section aria-labelledby="camera-review-heading">
+          <h3 id="camera-review-heading">Camera facing</h3>
+          <p id="camera-facing"></p>
+          <p id="camera-not-visible-note" hidden></p>
+          <p class="note">Based on valid facing classifications, not time or eye contact. Missing faces and unavailable frames are excluded.</p>
+        </section>
+        <section aria-labelledby="cue-review-heading">
+          <h3 id="cue-review-heading">Live cues</h3>
+          <p id="cue-total"></p>
+          <ul id="cue-breakdown"></ul>
+        </section>
+        <section id="quality-section" aria-labelledby="quality-heading" hidden>
+          <h3 id="quality-heading">Data quality</h3>
+          <p id="recognition-coverage"></p>
+          <ul id="review-quality"></ul>
+        </section>
+        <section aria-labelledby="filler-heading">
+          <h3 id="filler-heading">Filler words</h3>
+          <p id="filler-total"></p>
+          <ul id="filler-breakdown"></ul>
+          <p id="filler-message"></p>
+          <p id="filler-rate"></p>
+          <p class="note">Counts are matches in the recognised transcript. Words such as “like” and “actually” can have other meanings. Each matched phrase counts as one occurrence.</p>
+        </section>
+      </section>
+
+      <section id="astra-section" class="pace-panel" aria-labelledby="astra-heading" hidden>
+        <h2 id="astra-heading">Astra Coach</h2>
+        <p class="note">Contextual coaching based on your transcript and measured results.</p>
+        <p id="astra-status" role="status" aria-live="polite"></p>
+        <div id="astra-content"></div>
+      </section>
+
+      <section id="transcript-section" aria-labelledby="transcript-heading" hidden>
+        <div class="transcript-header">
+          <h2 id="transcript-heading">Original transcript</h2>
+          <button id="clear-button" type="button" disabled>Clear transcript</button>
+        </div>
+        <p id="transcript-help" class="note">The words captured by speech recognition, kept unchanged. Starting again begins a new transcript.</p>
+        <div id="transcript" role="region" aria-labelledby="transcript-heading" aria-describedby="transcript-help" tabindex="0" data-empty="true">Your speech will appear here.</div>
+      </section>
+      <noscript><p>Enable JavaScript in Google Chrome to use SpeakCue.</p></noscript>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "speakcue",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build:voice": "esbuild voice/realtime-client.mjs --bundle --minify --platform=browser --format=esm --target=chrome120 --outfile=app/vendor/spoken-cues-sdk.mjs --legal-comments=inline",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@openai/agents-realtime": "0.18.0",
+    "zod": "4.6.2"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}
